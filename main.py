@@ -3,6 +3,8 @@ from tkinter import ttk,messagebox
 import mysql.connector as mycon
 from tkcalendar import DateEntry
 from datetime import date
+import hashlib
+import hmac
 
 db = mycon.connect(
     host='localhost',
@@ -66,8 +68,8 @@ def register_donor():
         dias_bp_val.set(0)
         disease_hist.set(False)
         medication.set(False)
-        dob_ent.delete(0, tk.END)
-        last_don_ent.delete(0, tk.END)
+        dob_ent.set_date(date.today())
+        last_don_ent.set_date(date.today())
 
     today = date.today()
 
@@ -247,7 +249,7 @@ def register_recp():
         recp_condition.set("")
         recp_urgency.set("")
         recp_units.set(0)
-        recp_dob_ent.delete(0, tk.END)
+        recp_dob_ent.set_date(date.today())
 
     today = date.today()
 
@@ -763,6 +765,79 @@ def open_recp_regs():
         row=6,column=2,
         columnspan=2,pady=15)
 
+admin_logged_in = False
+
+def login_admin():
+    global admin_logged_in
+    username = user_var.get().strip()
+    password = pass_var.get()
+
+    if not username or not password:
+        messagebox.showerror(
+            'Login Failed',
+            'Enter username and password.'
+        )
+        return
+
+    cur.execute("""
+        SELECT Password_Salt, Password_Hash
+        FROM admin_users
+        WHERE Username = %s
+    """, (username,))
+
+    result = cur.fetchone()
+
+    if result is None:
+        messagebox.showerror(
+            'Login Failed',
+            'Invalid username or password.'
+        )
+        pass_var.set('')
+        return
+
+    salt, stored_hash = result
+
+    entered_hash = hashlib.pbkdf2_hmac(
+        'sha256',
+        password.encode(),
+        bytes.fromhex(salt),
+        200000
+    ).hex()
+
+    if hmac.compare_digest(entered_hash, stored_hash):
+        admin_logged_in = True
+        pass_var.set('')
+        admin_frame.tkraise()
+    else:
+        messagebox.showerror(
+            'Login Failed',
+            'Invalid username or password.'
+        )
+        pass_var.set('')
+
+
+def logout_admin():
+    global admin_logged_in
+    admin_logged_in = False
+    user_var.set("")
+    pass_var.set("")
+
+    home_frame.tkraise()
+
+def open_admin_section(section):
+    if not admin_logged_in:
+        messagebox.showerror(
+            "Access Denied",
+            "Please log in as an administrator."
+        )
+        login_frame.tkraise()
+        return
+
+    messagebox.showinfo(
+        section,
+        "The " + section + " page will be added next."
+    )
+
 
 #home page
 
@@ -795,7 +870,6 @@ admin_btn.grid(
 
 #user page
 
-
 grid6x6(regs_frame)
 back_btn = ttk.Button(
     regs_frame,
@@ -816,9 +890,7 @@ recp_btn = ttk.Button(
     command=open_recp_regs)
 recp_btn.grid(row=3,column=1,
               sticky='news',padx=10,pady=10)
-#donor regs
 
-#recp regs
 
 #admin login
 
@@ -826,17 +898,150 @@ grid6x6(login_frame)
 back_btn = ttk.Button(
     login_frame,
     text='Back',
-    command=lambda:home_frame.tkraise())
-back_btn.place(x=50,y=50)
+    command=lambda: home_frame.tkraise()
+)
+back_btn.place(x=50, y=50)
 
 login_subframe = ttk.Frame(
     login_frame,
     borderwidth=5,
-    relief='solid')
+    relief='solid'
+)
 login_subframe.grid(
-    row=1,column=1,
-    rowspan=4,columnspan=4,
-    sticky='nsew',padx=40,pady=30)
+    row=1, column=1,
+    rowspan=4, columnspan=4,
+    sticky='nsew', padx=40, pady=30
+)
+
+grid6x6(login_subframe)
+l_header = ttk.Label(
+    login_subframe,
+    text='Sign in',
+    font=('Calibri', 42, 'bold'),
+    anchor='center'
+)
+l_header.grid(
+    row=1, column=0,
+    columnspan=6, sticky='ew'
+)
+user_var = tk.StringVar()
+ttk.Label(
+    login_subframe,
+    text='Username'
+).grid(row=2, column=1, columnspan=2, sticky='ew')
+
+username_ent = ttk.Entry(
+    login_subframe,
+    textvariable=user_var
+)
+username_ent.grid(
+    row=2, column=3, columnspan=2, sticky='ew'
+)
+
+pass_var = tk.StringVar()
+ttk.Label(
+    login_subframe,
+    text='Password'
+).grid(row=3, column=1, columnspan=2, sticky='ew')
+
+password_ent = ttk.Entry(
+    login_subframe,
+    textvariable=pass_var,
+    show='*'
+)
+password_ent.grid(
+    row=3, column=3, columnspan=2, sticky='ew'
+)
+
+login_btn = ttk.Button(
+    login_subframe,
+    text='Sign in',
+    command=login_admin
+)
+login_btn.grid(
+    row=4, column=2,
+    columnspan=2, sticky='ew',
+    padx=10, pady=10
+)
+
+#admin dashboard
+grid6x6(admin_frame)
+
+admin_header = ttk.Label(
+    admin_frame,
+    text="Admin Dashboard",
+    font=("Calibri", 32, "bold"),
+    anchor="center"
+)
+
+admin_header.grid(
+    row=0,
+    column=1,
+    columnspan=4,
+    sticky="ew",
+    pady=20
+)
+
+donors_btn = ttk.Button(
+    admin_frame,
+    text="View Donors",
+    command=lambda: open_admin_section("Donor Records")
+)
+
+donors_btn.grid(
+    row=2,
+    column=1,
+    columnspan=2,
+    sticky="nsew",
+    padx=20,
+    pady=20
+)
+
+recipients_btn = ttk.Button(
+    admin_frame,
+    text="View Recipients",
+    command=lambda: open_admin_section("Recipient Records")
+)
+
+recipients_btn.grid(
+    row=2,
+    column=3,
+    columnspan=2,
+    sticky="nsew",
+    padx=20,
+    pady=20
+)
+
+inventory_btn = ttk.Button(
+    admin_frame,
+    text="Blood Inventory",
+    command=lambda: open_admin_section("Blood Inventory")
+)
+
+inventory_btn.grid(
+    row=3,
+    column=1,
+    columnspan=2,
+    sticky="nsew",
+    padx=20,
+    pady=20
+)
+
+logout_btn = ttk.Button(
+    admin_frame,
+    text="Logout",
+    command=logout_admin
+)
+
+logout_btn.grid(
+    row=3,
+    column=3,
+    columnspan=2,
+    sticky="nsew",
+    padx=20,
+    pady=20
+)
+
 #donor recs
 
 #recp recs
