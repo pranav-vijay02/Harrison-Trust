@@ -808,6 +808,7 @@ def login_admin():
         admin_logged_in = True
         pass_var.set('')
         admin_frame.tkraise()
+        admin_dash_frame.tkraise()
     else:
         messagebox.showerror(
             'Login Failed',
@@ -823,21 +824,6 @@ def logout_admin():
     pass_var.set("")
 
     home_frame.tkraise()
-
-def open_admin_section(section):
-    if not admin_logged_in:
-        messagebox.showerror(
-            "Access Denied",
-            "Please log in as an administrator."
-        )
-        login_frame.tkraise()
-        return
-
-    messagebox.showinfo(
-        section,
-        "The " + section + " page will be added next."
-    )
-
 
 #home page
 
@@ -898,151 +884,203 @@ grid6x6(login_frame)
 back_btn = ttk.Button(
     login_frame,
     text='Back',
-    command=lambda: home_frame.tkraise()
-)
+    command=lambda: home_frame.tkraise())
 back_btn.place(x=50, y=50)
 
 login_subframe = ttk.Frame(
     login_frame,
     borderwidth=5,
-    relief='solid'
-)
+    relief='solid')
 login_subframe.grid(
     row=1, column=1,
     rowspan=4, columnspan=4,
-    sticky='nsew', padx=40, pady=30
-)
+    sticky='nsew', padx=40, pady=30)
 
 grid6x6(login_subframe)
 l_header = ttk.Label(
     login_subframe,
     text='Sign in',
     font=('Calibri', 42, 'bold'),
-    anchor='center'
-)
+    anchor='center')
 l_header.grid(
     row=1, column=0,
-    columnspan=6, sticky='ew'
-)
+    columnspan=6, sticky='ew')
+
 user_var = tk.StringVar()
-ttk.Label(
+user_label = ttk.Label(
     login_subframe,
-    text='Username'
-).grid(row=2, column=1, columnspan=2, sticky='ew')
+    text='Username')
+user_label.grid(row=2, column=1, columnspan=2, sticky='ew')
 
 username_ent = ttk.Entry(
     login_subframe,
-    textvariable=user_var
-)
+    textvariable=user_var)
 username_ent.grid(
-    row=2, column=3, columnspan=2, sticky='ew'
-)
+    row=2, column=3, 
+    columnspan=2, sticky='ew')
 
 pass_var = tk.StringVar()
-ttk.Label(
+passwd_label = ttk.Label(
     login_subframe,
-    text='Password'
-).grid(row=3, column=1, columnspan=2, sticky='ew')
+    text='Password')
+passwd_label.grid(row=3, column=1, columnspan=2, sticky='ew')
 
 password_ent = ttk.Entry(
     login_subframe,
     textvariable=pass_var,
-    show='*'
-)
+    show='*')
 password_ent.grid(
-    row=3, column=3, columnspan=2, sticky='ew'
-)
+    row=3, column=3, columnspan=2, sticky='ew')
 
 login_btn = ttk.Button(
     login_subframe,
     text='Sign in',
-    command=login_admin
-)
+    command=login_admin)
+
 login_btn.grid(
     row=4, column=2,
     columnspan=2, sticky='ew',
-    padx=10, pady=10
-)
+    padx=10, pady=10)
 
 #admin dashboard
-grid6x6(admin_frame)
+
+admin_dash_frame = ttk.Frame(admin_frame)
+admin_dash_frame.place(relx=0,rely=0,relwidth=1,relheight=1)
+grid6x6(admin_dash_frame)
 
 admin_header = ttk.Label(
-    admin_frame,
+    admin_dash_frame,
     text="Admin Dashboard",
     font=("Calibri", 32, "bold"),
-    anchor="center"
-)
+    anchor="center")
 
 admin_header.grid(
-    row=0,
-    column=1,
-    columnspan=4,
-    sticky="ew",
-    pady=20
-)
+    row=0,column=1,columnspan=4,
+    sticky="ew",pady=20)
+
+donors_rec_frame = ttk.Frame(admin_frame)
+recp_rec_frame = ttk.Frame(admin_frame)
+blood_inv_frame = ttk.Frame(admin_frame)
+
+donors_rec_frame.place(relx=0,rely=0,relwidth=1,relheight=1)
+recp_rec_frame.place(relx=0,rely=0,relwidth=1,relheight=1)
+blood_inv_frame.place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def open_admin_section(section):
+    if not admin_logged_in:
+        messagebox.showerror(
+            "Access Denied",
+            "Please log in as an administrator.")
+        login_frame.tkraise()
+        return
+
+    section.tkraise()
 
 donors_btn = ttk.Button(
-    admin_frame,
+    admin_dash_frame,
     text="View Donors",
-    command=lambda: open_admin_section("Donor Records")
-)
+    command=lambda: open_admin_section(donors_rec_frame))
 
 donors_btn.grid(
-    row=2,
-    column=1,
-    columnspan=2,
-    sticky="nsew",
-    padx=20,
-    pady=20
-)
+    row=2,column=1,
+    columnspan=2,sticky="nsew",
+    padx=20,pady=20)
 
 recipients_btn = ttk.Button(
-    admin_frame,
+    admin_dash_frame,
     text="View Recipients",
-    command=lambda: open_admin_section("Recipient Records")
-)
+    command=lambda: open_admin_section(recp_rec_frame))
 
 recipients_btn.grid(
-    row=2,
-    column=3,
-    columnspan=2,
-    sticky="nsew",
-    padx=20,
-    pady=20
-)
+    row=2,column=3,
+    columnspan=2,sticky="nsew",
+    padx=20,pady=20)
 
 inventory_btn = ttk.Button(
-    admin_frame,
+    admin_dash_frame,
     text="Blood Inventory",
-    command=lambda: open_admin_section("Blood Inventory")
-)
+    command=lambda: open_admin_section(blood_inv_frame))
 
 inventory_btn.grid(
-    row=3,
-    column=1,
-    columnspan=2,
-    sticky="nsew",
-    padx=20,
-    pady=20
-)
+    row=3,column=1,
+    columnspan=2,sticky="nsew",
+    padx=20,pady=20)
 
 logout_btn = ttk.Button(
-    admin_frame,
+    admin_dash_frame,
     text="Logout",
-    command=logout_admin
-)
+    command=logout_admin)
 
 logout_btn.grid(
-    row=3,
-    column=3,
-    columnspan=2,
-    sticky="nsew",
-    padx=20,
-    pady=20
-)
+    row=3,column=3,
+    columnspan=2,sticky="nsew",
+    padx=20,pady=20)
+
+admin_dash_frame.tkraise()
 
 #donor recs
+columns = ('ID','Name','Gender','Age','DOB','Phone',
+           'City','Blood Group','Haemoglobin','Weight','SBP','DBP','Last Donation')
+
+tree = ttk.Treeview(
+    donors_rec_frame,
+    columns=columns,
+    show='headings')
+tree.pack(fill='both',expand=True)
+
+tree.heading('ID',text='Donor ID')
+tree.column('ID',width=70,anchor='center')
+
+tree.heading('Name',text='Donor Name')
+tree.column('Name',width=100,anchor='center')
+
+tree.heading('Gender',text='Gender')
+tree.column('Gender',width=80,anchor='center')
+
+tree.heading('Age',text='Age')
+tree.column('Age',width=40,anchor='center')
+
+tree.heading('DOB',text='DOB')
+tree.column('DOB',width=90,anchor='center')
+
+tree.heading('Phone',text='Phone')
+tree.column('Phone',width=100,anchor='center')
+
+tree.heading('City',text='City')
+tree.column('City',width=70,anchor='center')
+
+tree.heading('Blood Group',text='Blood Group')
+tree.column('Blood Group',width=90,anchor='center')
+
+tree.heading('Haemoglobin',text='Haemoglobin')
+tree.column('Haemoglobin',width=80,anchor='center')
+
+tree.heading('Weight',text='Weight')
+tree.column('Weight',width=70,anchor='center')
+
+tree.heading('SBP',text='Systolic BP')
+tree.column('SBP',width=50,anchor='center')
+
+tree.heading('DBP',text='Diastolic BP')
+tree.column('DBP',width=50,anchor='center')
+
+tree.heading('Last Donation',text='Last Donation')
+tree.column('Last Donation',width=40,anchor='center')
+
+query = '''SELECT 
+                Donor_ID,Donor_Name,Gender,
+                Age,DOB,Phone,City,Blood_Group,
+                Haemoglobin,Weight,Systolic_BP,
+                Diastolic_BP,Last_Donation 
+            FROM donors_general NATURAL JOIN donors_medical
+            ORDER BY Donor_ID'''
+
+cur.execute(query)
+records = cur.fetchall()
+
+for rec in records:
+    tree.insert('','end',values=rec)
+
 
 #recp recs
 
