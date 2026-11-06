@@ -825,6 +825,63 @@ def logout_admin():
 
     home_frame.tkraise()
 
+show_password = tk.BooleanVar(value=False)
+def toggle_passwd():
+    if show_password.get():
+        password_ent.config(show='')
+    else:
+        password_ent.config(show='*')
+
+def load_blood_overview():
+
+    for item in blood_tree.get_children():
+        blood_tree.delete(item)
+
+    donor_counts = {'A+':0,'A-':0,'B+':0,'B-':0,
+                    'AB+':0,'AB-':0,'O+':0,'O-':0}
+
+    recipient_counts = {'A+':0,'A-':0,'B+':0,'B-':0,
+                        'AB+':0,'AB-':0,'O+':0,'O-':0}
+
+    units_required = {'A+':0,'A-':0,'B+':0,'B-':0,
+                      'AB+':0,'AB-':0,'O+':0,'O-':0}
+
+    cur.execute("""
+    SELECT Blood_Group, COUNT(*)
+    FROM donors_general
+    GROUP BY Blood_Group
+    """)
+
+    for blood_group,total in cur.fetchall():
+        donor_counts[blood_group] = total
+
+    cur.execute("""
+                SELECT g.Blood_Group, COUNT(*), SUM(m.Units_Reqd) 
+                FROM recipients_general g 
+                NATURAL JOIN recipients_medical m 
+                GROUP BY g.Blood_Group""")
+
+    for blood_group,total,units in cur.fetchall():
+        recipient_counts[blood_group] = total
+        units_required[blood_group] = units
+
+    for blood_group in donor_counts:
+        blood_tree.insert(
+            '', 'end',
+            values=(blood_group,
+                    donor_counts[blood_group],
+                    recipient_counts[blood_group],
+                    units_required[blood_group]))
+
+
+def open_blood_overview():
+
+    if not admin_logged_in:
+        return
+
+    load_blood_overview()
+    blood_inv_frame.tkraise()
+
 #home page
 
 grid6x6(home_frame)
@@ -932,6 +989,11 @@ password_ent = ttk.Entry(
 password_ent.grid(
     row=3, column=3, columnspan=2, sticky='ew')
 
+show_pass_btn = ttk.Checkbutton(
+    login_frame,text='Show Password',
+    variable=show_password,command=toggle_passwd)
+show_pass_btn.grid(row=4,column=2,sticky='w')
+
 login_btn = ttk.Button(
     login_subframe,
     text='Sign in',
@@ -999,7 +1061,7 @@ recipients_btn.grid(
 inventory_btn = ttk.Button(
     admin_dash_frame,
     text="Blood Inventory",
-    command=lambda: open_admin_section(blood_inv_frame))
+    command=open_blood_overview)
 
 inventory_btn.grid(
     row=3,column=1,
@@ -1019,53 +1081,62 @@ logout_btn.grid(
 admin_dash_frame.tkraise()
 
 #donor recs
-columns = ('ID','Name','Gender','Age','DOB','Phone',
+header_donor = ttk.Frame(donors_rec_frame)
+header_donor.pack(fill='x',padx=10,pady=10)
+title = ttk.Label(header_donor,text='Donor Records',
+                  font=('Arial',20,'bold'))
+title.pack(side='left',padx=10)
+
+back = ttk.Button(header_donor,text='Back',command=lambda: admin_dash_frame.tkraise())
+back.pack(side='right',padx=10)
+
+columns_don = ('ID','Name','Gender','Age','DOB','Phone',
            'City','Blood Group','Haemoglobin','Weight','SBP','DBP','Last Donation')
 
-tree = ttk.Treeview(
+tree_don = ttk.Treeview(
     donors_rec_frame,
-    columns=columns,
+    columns=columns_don,
     show='headings')
-tree.pack(fill='both',expand=True)
+tree_don.pack(fill='both',expand=True)
 
-tree.heading('ID',text='Donor ID')
-tree.column('ID',width=70,anchor='center')
+tree_don.heading('ID',text='Donor ID')
+tree_don.column('ID',width=70,anchor='center')
 
-tree.heading('Name',text='Donor Name')
-tree.column('Name',width=100,anchor='center')
+tree_don.heading('Name',text='Donor Name')
+tree_don.column('Name',width=100,anchor='center')
 
-tree.heading('Gender',text='Gender')
-tree.column('Gender',width=80,anchor='center')
+tree_don.heading('Gender',text='Gender')
+tree_don.column('Gender',width=80,anchor='center')
 
-tree.heading('Age',text='Age')
-tree.column('Age',width=40,anchor='center')
+tree_don.heading('Age',text='Age')
+tree_don.column('Age',width=40,anchor='center')
 
-tree.heading('DOB',text='DOB')
-tree.column('DOB',width=90,anchor='center')
+tree_don.heading('DOB',text='DOB')
+tree_don.column('DOB',width=90,anchor='center')
 
-tree.heading('Phone',text='Phone')
-tree.column('Phone',width=100,anchor='center')
+tree_don.heading('Phone',text='Phone')
+tree_don.column('Phone',width=100,anchor='center')
 
-tree.heading('City',text='City')
-tree.column('City',width=70,anchor='center')
+tree_don.heading('City',text='City')
+tree_don.column('City',width=70,anchor='center')
 
-tree.heading('Blood Group',text='Blood Group')
-tree.column('Blood Group',width=90,anchor='center')
+tree_don.heading('Blood Group',text='Blood Group')
+tree_don.column('Blood Group',width=90,anchor='center')
 
-tree.heading('Haemoglobin',text='Haemoglobin')
-tree.column('Haemoglobin',width=80,anchor='center')
+tree_don.heading('Haemoglobin',text='Haemoglobin')
+tree_don.column('Haemoglobin',width=80,anchor='center')
 
-tree.heading('Weight',text='Weight')
-tree.column('Weight',width=70,anchor='center')
+tree_don.heading('Weight',text='Weight')
+tree_don.column('Weight',width=70,anchor='center')
 
-tree.heading('SBP',text='Systolic BP')
-tree.column('SBP',width=50,anchor='center')
+tree_don.heading('SBP',text='Systolic BP')
+tree_don.column('SBP',width=50,anchor='center')
 
-tree.heading('DBP',text='Diastolic BP')
-tree.column('DBP',width=50,anchor='center')
+tree_don.heading('DBP',text='Diastolic BP')
+tree_don.column('DBP',width=50,anchor='center')
 
-tree.heading('Last Donation',text='Last Donation')
-tree.column('Last Donation',width=40,anchor='center')
+tree_don.heading('Last Donation',text='Last Donation')
+tree_don.column('Last Donation',width=40,anchor='center')
 
 query = '''SELECT 
                 Donor_ID,Donor_Name,Gender,
@@ -1076,13 +1147,139 @@ query = '''SELECT
             ORDER BY Donor_ID'''
 
 cur.execute(query)
-records = cur.fetchall()
+records_don = cur.fetchall()
 
-for rec in records:
-    tree.insert('','end',values=rec)
+for rec in records_don:
+    tree_don.insert('','end',values=rec)
 
 
 #recp recs
+header_recp = ttk.Frame(recp_rec_frame)
+header_recp.pack(fill='x',padx=10,pady=10)
+title = ttk.Label(header_recp,text='Recipient Records',
+                  font=('Arial',20,'bold'))
+title.pack(side='left',padx=10)
+
+back = ttk.Button(header_recp,text='Back',command=lambda: admin_dash_frame.tkraise())
+back.pack(side='right',padx=10)
+
+columns_recp = ('ID','Name','Gender','Age','DOB','Phone',
+           'Blood Group','Condition','Urgency','Units Required')
+
+tree_recp = ttk.Treeview(
+    recp_rec_frame,
+    columns=columns_recp,
+    show='headings')
+tree_recp.pack(fill='both',expand=True)
+
+tree_recp.heading('ID',text='Recipient ID')
+tree_recp.column('ID',width=70,anchor='center')
+
+tree_recp.heading('Name',text='Recipient Name')
+tree_recp.column('Name',width=100,anchor='center')
+
+tree_recp.heading('Gender',text='Gender')
+tree_recp.column('Gender',width=80,anchor='center')
+
+tree_recp.heading('Age',text='Age')
+tree_recp.column('Age',width=40,anchor='center')
+
+tree_recp.heading('DOB',text='DOB')
+tree_recp.column('DOB',width=90,anchor='center')
+
+tree_recp.heading('Phone',text='Phone')
+tree_recp.column('Phone',width=100,anchor='center')
+
+tree_recp.heading('Blood Group',text='Blood Group')
+tree_recp.column('Blood Group',width=90,anchor='center')
+
+tree_recp.heading('Condition',text='Condition')
+tree_recp.column('Condition',width=80,anchor='center')
+
+tree_recp.heading('Urgency',text='Urgency')
+tree_recp.column('Urgency',width=70,anchor='center')
+
+tree_recp.heading('Units Required',text='Units Required')
+tree_recp.column('Units Required',width=50,anchor='center')
+
+query = '''SELECT 
+                Recipient_ID,Recipient_Name,Gender,
+                Age,DOB,Phone,Blood_Group,
+                Rec_Condition,Urgency,Units_Reqd
+            FROM recipients_general NATURAL JOIN recipients_medical
+            ORDER BY Recipient_ID'''
+
+cur.execute(query)
+records_recp = cur.fetchall()
+
+for rec in records_recp:
+    tree_recp.insert('','end',values=rec)
 
 #inventory
+blood_inv_frame.place(
+    relx=0,rely=0,
+    relwidth=1,relheight=1)
+
+inv_header = ttk.Frame(blood_inv_frame)
+inv_header.pack(fill='x',padx=10,pady=5)
+
+inv_title = ttk.Label(
+    inv_header,
+    text='Blood Group Overview',
+    font=('Calibri',24,'bold'))
+inv_title.pack(side='left',padx=10)
+
+inv_back_btn = ttk.Button(
+    inv_header,
+    text='Back',
+    command=lambda:admin_dash_frame.tkraise())
+inv_back_btn.pack(side='right',padx=10)
+
+inv_content = ttk.Frame(blood_inv_frame)
+inv_content.pack(fill='both',expand=True,padx=10,pady=5)
+
+blood_columns = ('Blood Group','Donors Registered',
+                 'Recipients Registered','Units Required')
+
+blood_tree = ttk.Treeview(
+    inv_content,
+    columns=blood_columns,
+    show='headings',
+    height=8)
+
+for col in blood_columns:
+    blood_tree.heading(col,text=col)
+    blood_tree.column(col,anchor='center',width=120)
+
+blood_tree.pack(
+    side='left',fill='both',expand=True,padx=5)
+
+compat_columns = ('Recipient Blood Group',
+                  'Compatible Donor Groups')
+
+compat_tree = ttk.Treeview(
+    inv_content,
+    columns=compat_columns,
+    show='headings',
+    height=8)
+
+for col in compat_columns:
+    compat_tree.heading(col,text=col)
+    compat_tree.column(col,anchor='center',width=150)
+
+compat_tree.pack(
+    side='right',fill='both',expand=True,padx=5)
+
+
+compatibility = [('A+','A+, A-, O+, O-'),('A-','A-, O-'),
+                 ('B+','B+, B-, O+, O-'),('B-','B-, O-'),
+                 ('AB+','All blood groups'),('O+','O+, O-'),
+                 ('AB-','AB-, A-, B-, O-'),('O-','O-')]
+
+for rec in compatibility:
+    compat_tree.insert('', 'end', values=rec)
+
+
+
+
 root.mainloop()
