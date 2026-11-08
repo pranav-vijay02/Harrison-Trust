@@ -25,6 +25,7 @@ cur = db.cursor()
 
 root = tk.Tk()
 root.title('Harrison Trust')
+root.geometry('1000x500')
 root.minsize(1000,500)
 root.iconbitmap('harrison_icon.ico')
 
@@ -568,7 +569,7 @@ def open_donor_regs():
         regs_frame,borderwidth=3,
         relief='solid',style='Register.TFrame')
     donor_subframe.grid(
-        row=1,column=3,rowspan=4,
+        row=1,column=3,rowspan=5,
         columnspan=3,sticky='news',
         padx=10,pady=10)
 
@@ -1064,7 +1065,7 @@ def open_blood_overview():
     load_blood_overview()
     blood_inv_frame.tkraise()
 
-
+grid6x6(home_frame)
 home_title = ttk.Label(
     home_frame,
     text='Harrison Trust',
@@ -1118,7 +1119,7 @@ recp_btn.grid(row=3,column=1,
 back_btn = ttk.Button(login_frame,text='Back',style='Back.TButton',
                       command=lambda: home_frame.tkraise())
 back_btn.place(x=50, y=50)
-
+grid6x6(login_frame)
 login_subframe = ttk.Frame(login_frame,borderwidth=5,
                            relief='solid')
 login_subframe.grid(row=1, column=1,
@@ -1134,7 +1135,7 @@ l_header.grid(row=1, column=0,
 
 user_var = tk.StringVar()
 user_label = ttk.Label(login_subframe,text='Username',style='Login.TLabel')
-user_label.grid(row=2, column=1, columnspan=2, sticky='ew',padx=10)
+user_label.grid(row=2, column=1, sticky='ew',padx=10)
 
 username_ent = ttk.Entry(login_subframe,style='Login.TEntry',
                          textvariable=user_var)
@@ -1144,7 +1145,7 @@ username_ent.grid(row=2, column=2,
 pass_var = tk.StringVar()
 passwd_label = ttk.Label(login_subframe,style='Login.TLabel',
                          text='Password')
-passwd_label.grid(row=3, column=1, columnspan=2, sticky='ew',padx=10)
+passwd_label.grid(row=3, column=1, sticky='ew',padx=10)
 
 password_ent = ttk.Entry(login_subframe,textvariable=pass_var,
                          style='Login.TEntry',show='*')
@@ -1237,8 +1238,6 @@ logout_btn.grid(
     columnspan=2,sticky="nsew",
     padx=20,pady=20)
 
-admin_dash_frame.tkraise()
-
 header_donor = ttk.Frame(donors_rec_frame)
 header_donor.pack(fill='x',padx=10,pady=10)
 title = ttk.Label(header_donor,text='Donor Records',
@@ -1253,7 +1252,15 @@ columns_don = ('ID','Name','Gender','Age','DOB','Phone',
 
 tree_don = ttk.Treeview(donors_rec_frame,columns=columns_don,
                         style='Records.Treeview',show='headings')
+don_scroll = ttk.Scrollbar(
+    donors_rec_frame,
+    orient='horizontal',
+    command=tree_don.xview)
+
+tree_don.configure(xscrollcommand=don_scroll.set)
+
 tree_don.pack(fill='both',expand=True)
+don_scroll.pack(fill='x')
 
 tree_don.heading('ID',text='Donor ID')
 tree_don.column('ID',width=70,anchor='center')
@@ -1286,13 +1293,13 @@ tree_don.heading('Weight',text='Weight')
 tree_don.column('Weight',width=70,anchor='center')
 
 tree_don.heading('SBP',text='Systolic BP')
-tree_don.column('SBP',width=50,anchor='center')
+tree_don.column('SBP',width=90,anchor='center')
 
 tree_don.heading('DBP',text='Diastolic BP')
-tree_don.column('DBP',width=50,anchor='center')
+tree_don.column('DBP',width=90,anchor='center')
 
 tree_don.heading('Last Donation',text='Last Donation')
-tree_don.column('Last Donation',width=40,anchor='center')
+tree_don.column('Last Donation',width=110,anchor='center')
 
 donor_query = '''SELECT 
                 Donor_ID,Donor_Name,Gender,
@@ -1325,7 +1332,16 @@ columns_recp = ('ID','Name','Gender','Age','DOB','Phone',
 
 tree_recp = ttk.Treeview(recp_rec_frame,columns=columns_recp,
                         style='Records.Treeview',show='headings')
+
+recp_scroll = ttk.Scrollbar(
+    recp_rec_frame,
+    orient='horizontal',
+    command=tree_recp.xview)
+
+tree_recp.configure(xscrollcommand=recp_scroll.set)
+
 tree_recp.pack(fill='both',expand=True)
+recp_scroll.pack(fill='x')
 
 tree_recp.heading('ID',text='Recipient ID')
 tree_recp.column('ID',width=70,anchor='center')
@@ -1355,7 +1371,7 @@ tree_recp.heading('Urgency',text='Urgency')
 tree_recp.column('Urgency',width=70,anchor='center')
 
 tree_recp.heading('Units Required',text='Units Required')
-tree_recp.column('Units Required',width=50,anchor='center')
+tree_recp.column('Units Required',width=120,anchor='center')
 
 recipients_query = '''SELECT 
                 Recipient_ID,Recipient_Name,Gender,
@@ -1432,5 +1448,7 @@ compatibility = [('A+','A+, A-, O+, O-'),('A-','A-, O-'),
 
 for rec in compatibility:
     compat_tree.insert('', 'end', values=rec)
+
+admin_dash_frame.tkraise()
 
 root.mainloop()
