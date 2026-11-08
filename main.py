@@ -6,6 +6,15 @@ from datetime import date
 import hashlib
 import hmac
 
+
+BG = '#101B2D'
+PANEL = '#1B2B40'
+SECONDARY = '#263B52'
+ACCENT = '#E63946'
+TEXT = '#F1F5F9'
+MUTED = '#91A4B7'
+WHITE = '#FFFFFF'
+
 db = mycon.connect(
     host='localhost',
     user='root',
@@ -17,16 +26,189 @@ cur = db.cursor()
 root = tk.Tk()
 root.title('Harrison Trust')
 root.minsize(1000,500)
+root.iconbitmap('harrison_icon.ico')
+
+style = ttk.Style()
+style.theme_use('clam')
+
+
+style.configure('TFrame',background=BG)
+
+style.configure('TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',11))
+
+style.configure('TButton',background=SECONDARY,
+                foreground=TEXT,font=('Segoe UI',11,'bold'),
+                padding=(12,8),borderwidth=0)
+
+style.map('TButton',
+          background=[('active',ACCENT),('pressed',ACCENT)],
+          foreground=[('active',WHITE)])
+
+style.configure('TEntry',fieldbackground=PANEL,
+                foreground=TEXT,insertcolor=WHITE,
+                padding=7)
+
+style.configure('TCombobox',fieldbackground=PANEL,
+                background=SECONDARY,foreground=TEXT,
+                padding=7)
+
+style.configure('Treeview', background=PANEL,
+                foreground=TEXT,fieldbackground=PANEL,
+                rowheight=30,font=('Segoe UI',10))
+
+style.configure('Treeview.Heading',background=SECONDARY,
+                foreground=WHITE,font=('Segoe UI',10,'bold'),
+                padding=8)
+
+style.map('Treeview',
+          background=[('selected',ACCENT)],
+          foreground=[('selected',WHITE)])
+
+style.configure('Home.TFrame',background=BG)
+
+style.configure('Title.TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',42,'bold'))
+
+style.configure('Subtitle.TLabel',background=BG,
+                foreground=MUTED,font=('Segoe UI',12))
+
+style.configure('Home.TButton',font=('Segoe UI',12,'bold'),
+                background=SECONDARY,foreground=TEXT,
+                padding=(25,15),borderwidth=0)
+
+style.map('Home.TButton',background=[('active',ACCENT)],
+          foreground=[('active','white')])
+
+style.configure('Admin.TButton',font=('Segoe UI',10,'bold'),
+                background=PANEL,foreground=TEXT,
+                padding=(15,8),borderwidth=0)
+
+style.map('Admin.TButton',background=[('active',SECONDARY)],
+          foreground=[('active',TEXT)])
+
+
+style.configure('Register.TFrame',background=BG)
+
+style.configure('RegisterTitle.TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',24,'bold'))
+
+style.configure('RegisterHeading.TLabel',background=BG,
+                foreground=ACCENT,font=('Segoe UI',13,'bold'))
+
+style.configure('Register.TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',10))
+
+style.configure('Register.TEntry',fieldbackground=PANEL,
+                foreground=TEXT,insertcolor=WHITE,
+                padding=7)
+
+style.configure('Register.TCombobox',fieldbackground=PANEL,
+                background=SECONDARY,foreground=TEXT,
+                padding=7)
+
+style.map('Register.TCombobox',
+          fieldbackground=[('readonly',PANEL)],
+          foreground=[('readonly',TEXT)])
+
+style.configure('Register.TSpinbox',fieldbackground=PANEL,
+                foreground=TEXT,arrowcolor=TEXT,
+                padding=7)
+
+style.configure('Register.TButton',font=('Segoe UI',10,'bold'),
+                background=SECONDARY,foreground=TEXT,
+                padding=(12,8),borderwidth=0)
+
+style.map('Register.TButton',
+          background=[('active',ACCENT)],
+          foreground=[('active',WHITE)])
+
+
+style.configure('Login.TFrame',background=BG)
+
+style.configure('LoginTitle.TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',10))
+
+style.configure('Login.TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',11,'bold'))
+
+style.configure('Login.TEntry',fieldbackground=PANEL,
+                foreground=TEXT,insertcolor=TEXT,
+                padding=10,borderwidth=1)
+
+style.configure('Login.TButton',
+                font=('Segoe UI',11,'bold'),
+                background=ACCENT,foreground='white',
+                padding=(15,10),borderwidth=0)
+
+style.map('Login.TButton',background=[('active','#C92F3B')])
+
+style.configure('Back.TButton',font=('Segoe UI',10),
+                background=BG,foreground=MUTED,
+                padding=8,borderwidth=0)
+
+style.map('Back.TButton',foreground=[('active',TEXT)])
+
+style.configure('Login.TCheckbutton',
+                background=BG,foreground=TEXT,
+                font=('Segoe UI',10))
+
+style.map('Login.TCheckbutton',
+          background=[('active',BG)],
+          foreground=[('active',WHITE)])
+
+style.configure('Admin.TFrame',background=BG)
+
+style.configure('AdminTitle.TLabel',background=BG,
+                foreground=TEXT,font=('Segoe UI',28,'bold'))
+
+style.configure('Admin.TButton',font=('Segoe UI',12,'bold'),
+                background=SECONDARY,foreground=TEXT,
+                padding=(20,14),borderwidth=0)
+
+style.map('Admin.TButton',
+          background=[('active',ACCENT)],
+          foreground=[('active',WHITE)])
+
+style.configure('AdminLogout.TButton',font=('Segoe UI',10,'bold'),
+                background=PANEL,foreground=MUTED,
+                padding=(12,8),borderwidth=0)
+
+style.map('AdminLogout.TButton',
+          background=[('active',ACCENT)],
+          foreground=[('active',WHITE)])
+
+style.configure('Records.Treeview',
+                background=PANEL,
+                foreground=TEXT,
+                fieldbackground=PANEL,
+                rowheight=32,
+                font=('Segoe UI',10))
+
+style.configure('Records.Treeview.Heading',
+                background=SECONDARY,
+                foreground=TEXT,
+                font=('Segoe UI',10,'bold'),
+                padding=8,
+                relief='flat')
+
+style.map('Records.Treeview',
+          background=[('selected',ACCENT)],
+          foreground=[('selected',WHITE)])
+
+style.map('Records.Treeview.Heading',
+          background=[('active',ACCENT)],
+          foreground=[('active',WHITE)])
 
 container = ttk.Frame(root)
 container.pack(fill='both',expand=True)
 container.rowconfigure(0,weight=1)
 container.columnconfigure(0,weight=1)
 
-home_frame = ttk.Frame(container)
-regs_frame = ttk.Frame(container)
-login_frame = ttk.Frame(container)
-admin_frame = ttk.Frame(container)
+home_frame = ttk.Frame(container,style='Home.TFrame')
+regs_frame = ttk.Frame(container,style='Register.TFrame')
+login_frame = ttk.Frame(container,style='Login.TFrame')
+admin_frame = ttk.Frame(container,style='Admin.TFrame')
 
 home_frame.grid(row=0,column=0,sticky='nsew')
 regs_frame.grid(row=0,column=0,sticky='nsew')
@@ -34,7 +216,7 @@ login_frame.grid(row=0,column=0,sticky='nsew')
 admin_frame.grid(row=0,column=0,sticky='nsew')
 home_frame.tkraise()
 
-#funcs
+
 def register_donor():
 
     donor_name = name.get()
@@ -161,12 +343,12 @@ def register_donor():
         return True, []
 
     is_eligible,reasons = eligible( donor_name,
-                                   donor_age,calc_age,
-                                   donor_gender,donor_blood,
-                                   donor_city,donor_weight,
-                                   donor_hemo,donor_sysbp,
-                                   donor_diasbp,donor_lastDon,
-                                   donor_disease,donor_medic)
+                            donor_age,calc_age,
+                            donor_gender,donor_blood,
+                            donor_city,donor_weight,
+                            donor_hemo,donor_sysbp,
+                            donor_diasbp,donor_lastDon,
+                            donor_disease,donor_medic)
 
     if not is_eligible:
         messagebox.showerror(
@@ -293,7 +475,7 @@ def register_recp():
             reasons.append('Condition must be selected.')
         if not r_urgency:
             reasons.append('Urgency must be selected.')
-        
+
 
         if reasons:
             return False,reasons
@@ -376,7 +558,6 @@ def open_donor_regs():
     global sys_bp_val, dias_bp_val, last_don_ent
     global disease_hist, medication, donor_subframe, recp_subframe
 
-    # Only one registration form should exist at a time.
     if 'recp_subframe' in globals() and recp_subframe.winfo_exists():
         recp_subframe.destroy()
 
@@ -385,7 +566,7 @@ def open_donor_regs():
 
     donor_subframe = ttk.Frame(
         regs_frame,borderwidth=3,
-        relief='solid')
+        relief='solid',style='Register.TFrame')
     donor_subframe.grid(
         row=1,column=3,rowspan=4,
         columnspan=3,sticky='news',
@@ -398,35 +579,35 @@ def open_donor_regs():
     donor_subframe.rowconfigure((1,2,3,4,5),weight=1)
     donor_subframe.rowconfigure(6,weight=2)
 
-#Form Title
+
     d_header = ttk.Label(
         donor_subframe,
         text='Donor Registration',
-        font=('Calibri', 30, 'bold'),
-        anchor='center')
+        anchor='center',
+        style='RegisterTitle.TLabel')
 
     d_header.grid(
         row=0,column=0,
         columnspan=6,sticky='nsew')
 
-#Name
+
     name_label = ttk.Label(
         donor_subframe,
-        text='Name')
+        text='Name',style='Register.TLabel')
     name_label.grid(
         row=1,column=0,sticky='e',
         padx=5,pady=5)
 
     name = tk.StringVar()
-    name_ent = ttk.Entry(donor_subframe,
+    name_ent = ttk.Entry(donor_subframe,style='Register.TEntry',
                          textvariable = name)
     name_ent.grid(row=1,column=1,sticky='ew',
                   padx=5,pady=5)
 
-#Gender 
+
     gender_label = ttk.Label(
         donor_subframe,
-        text='Gender')
+        text='Gender',style='Register.TLabel')
     gender_label.grid(
         row=1,column=2,
         sticky='e',padx=5,pady=5)
@@ -437,15 +618,15 @@ def open_donor_regs():
         donor_subframe,
         textvariable=gender_str,
         values=genders,
-        state='readonly')
+        state='readonly',style='Register.TCombobox')
     gender_box.grid(
         row=1,column=3,sticky='ew',
         padx=5,pady=5)
 
-#Blood Group
+
     blood_label = ttk.Label(
         donor_subframe,
-        text='Blood Group')
+        text='Blood Group',style='Register.TLabel')
     blood_label.grid(
         row=1,column=4,sticky='e',
         padx=5,pady=5)
@@ -459,15 +640,15 @@ def open_donor_regs():
       donor_subframe,
       textvariable=blood_str,
       values=blood_groups,
-      state='readonly')
+      state='readonly',style='Register.TCombobox')
     blood_box.grid(
         row=1,column=5,sticky='ew',
         padx=5,pady=5)
 
-#Age
+
     age_label = ttk.Label(
         donor_subframe,
-        text='Age')
+        text='Age',style='Register.TLabel')
     age_label.grid(
        row=2,column=0,sticky='e',
        padx=5,pady=5)
@@ -475,15 +656,15 @@ def open_donor_regs():
     age_int = tk.IntVar()
     age_box = ttk.Spinbox(
         donor_subframe,from_=18,
-        to=122,textvariable=age_int)
+        to=122,textvariable=age_int,style='Register.TSpinbox')
     age_box.grid(
         row=2,column=1,sticky='ew',
         padx=5,pady=5)
 
-#DOB
+
     dob_label = ttk.Label(
         donor_subframe,
-        text='DOB')
+        text='DOB',style='Register.TLabel')
     dob_label.grid(
         row=2,column=2,sticky='e',
         padx=5,pady=5)
@@ -492,19 +673,19 @@ def open_donor_regs():
     dob_ent = DateEntry(
         donor_subframe,
         date_pattern='yyyy/mm/dd',
-        textvariable=dob)
+        textvariable=dob,style='Register.TEntry')
     dob_ent.grid(
         row=2,column=3,sticky='ew',
         padx=5,pady=5)
 
-#Phone Number
+
     def validate_phone(value):
         return value == "" or (value.isdigit() and len(value) <= 10)
     phone_validation = root.register(validate_phone)
 
     phone_label = ttk.Label(
         donor_subframe,
-        text='Phone')
+        text='Phone',style='Register.TLabel')
     phone_label.grid(
         row=4,column=0,sticky='e',
         padx=5,pady=5)
@@ -514,15 +695,15 @@ def open_donor_regs():
         donor_subframe,
         validate='key',
         validatecommand=(phone_validation,'%P'),
-        textvariable=phone_num)
+        textvariable=phone_num,style='Register.TEntry')
     phone_ent.grid(
         row=4,column=1,sticky='ew',
         padx=5,pady=5)
 
-#City
+
     city_label = ttk.Label(
         donor_subframe,
-        text='City')
+        text='City',style='Register.TLabel')
     city_label.grid(
         row=3,column=0,sticky='e',
         padx=5,pady=5)
@@ -530,15 +711,15 @@ def open_donor_regs():
     city = tk.StringVar()
     city_ent = ttk.Entry(
         donor_subframe,
-        textvariable=city)
+        textvariable=city,style='Register.TEntry')
     city_ent.grid(
         row=3,column=1,sticky='ew',
         padx=5,pady=5)
 
-#Weight    
+
     weight_label = ttk.Label(
         donor_subframe,
-        text='Weight (kg)')
+        text='Weight (kg)',style='Register.TLabel')
     weight_label.grid(
         row=4,column=2,sticky='e',
         padx=5,pady=5)
@@ -549,16 +730,16 @@ def open_donor_regs():
         from_=35.0,
         to=200.0,
         increment=0.1,
-        textvariable=weight_val)
+        textvariable=weight_val,style='Register.TSpinbox')
 
     weight_box.grid(
         row=4,column=3,sticky='ew',
         padx=5,pady=5)
 
-#Last Donated
+
     last_don_label = ttk.Label(
         donor_subframe,
-        text='Last Donation')
+        text='Last Donation',style='Register.TLabel')
     last_don_label.grid(
         row=3,column=2,sticky='e',
         padx=5,pady=5)
@@ -567,15 +748,15 @@ def open_donor_regs():
     last_don_ent = DateEntry(
         donor_subframe,
         date_pattern='yyyy/mm/dd',
-        textvariable=last_donated)
+        textvariable=last_donated,style='Register.TEntry')
     last_don_ent.grid(
         row=3,column=3,sticky='ew',
         padx=5,pady=5)
 
-#Hemoglobin
+
     hemo_label = ttk.Label(
         donor_subframe,
-        text='Haemoglobin')
+        text='Haemoglobin',style='Register.TLabel')
     hemo_label.grid(
         row=2,column=4,sticky='e',
         padx=5,pady=5)
@@ -586,15 +767,15 @@ def open_donor_regs():
         from_=10.0,
         to=26.0,
         increment=0.1,
-        textvariable=hemo_val)
+        textvariable=hemo_val,style='Register.TSpinbox')
     hemo_box.grid(
         row=2,column=5,sticky='ew',
         padx=5,pady=5)
 
-#Systolic BP
+
     sysbp_label = ttk.Label(
         donor_subframe,
-        text='Systolic BP')
+        text='Systolic BP',style='Register.TLabel')
     sysbp_label.grid(
         row=3,column=4,sticky='e',
         padx=5,pady=5)
@@ -604,12 +785,12 @@ def open_donor_regs():
         donor_subframe,
         from_=50,
         to=300,
-        textvariable=sys_bp_val)
+        textvariable=sys_bp_val,style='Register.TSpinbox')
     sysbp_box.grid(
         row=3,column=5,sticky='ew',
         padx=5,pady=5)
 
-#Disease History
+
     disease_hist = tk.BooleanVar()
     disease_check = ttk.Checkbutton(
         donor_subframe,
@@ -619,7 +800,7 @@ def open_donor_regs():
         row=5,column=4,columnspan=2,
         sticky='w',padx=5,pady=5)
 
-#Medication
+
     medication = tk.BooleanVar()
     medic_check = ttk.Checkbutton(
         donor_subframe,
@@ -629,10 +810,10 @@ def open_donor_regs():
         row=5,column=1,columnspan=2,
         sticky='w',padx=5,pady=5)
 
-#Diastolic BP
+
     diasbp_label = ttk.Label(
         donor_subframe,
-        text='Diastolic BP')
+        text='Diastolic BP',style='Register.TLabel')
     diasbp_label.grid(
         row=4,column=4,sticky='e',
         padx=5,pady=5)
@@ -642,7 +823,7 @@ def open_donor_regs():
         donor_subframe,
         from_=30,
         to=200,
-        textvariable=dias_bp_val)
+        textvariable=dias_bp_val,style='Register.TSpinbox')
     dias_bp_box.grid(
         row=4,column=5,sticky='ew',
         padx=5,pady=5)
@@ -650,11 +831,11 @@ def open_donor_regs():
     submit_btn = ttk.Button(
         donor_subframe,
         text='Submit',
-        command=register_donor)
+        command=register_donor,style='Register.TButton')
     submit_btn.grid(
         row=6,column=2,
         columnspan=2,pady=15)
-    
+
 
 def open_recp_regs():
     global recp_subframe, donor_subframe
@@ -662,14 +843,14 @@ def open_recp_regs():
     global recp_gender, recp_blood, recp_phone
     global recp_condition, recp_urgency, recp_units
 
-    # Remove the donor form before creating the recipient form.
     if 'donor_subframe' in globals() and donor_subframe.winfo_exists():
         donor_subframe.destroy()
 
     if 'recp_subframe' in globals() and recp_subframe.winfo_exists():
         recp_subframe.destroy()
 
-    recp_subframe = ttk.Frame(regs_frame, borderwidth=3, relief='solid')
+    recp_subframe = ttk.Frame(regs_frame, borderwidth=3, relief='solid',
+                              style='Register.TFrame')
     recp_subframe.grid(row=1, column=3, rowspan=5, columnspan=3,
                        sticky='news', padx=10, pady=10)
 
@@ -680,46 +861,46 @@ def open_recp_regs():
     recp_subframe.rowconfigure(4, weight=2)
 
     r_header = ttk.Label(recp_subframe, text='Recipient Registration',
-                         font=('Calibri', 30, 'bold'), anchor='center')
+                         anchor='center',style='RegisterTitle.TLabel')
     r_header.grid(row=0, column=0, columnspan=6, sticky='nsew')
 
-    ttk.Label(recp_subframe, text='Name').grid(
+    ttk.Label(recp_subframe, text='Name',style='Register.TLabel').grid(
         row=1, column=0, sticky='e', padx=5, pady=5)
     recp_name = tk.StringVar()
-    ttk.Entry(recp_subframe, textvariable=recp_name).grid(
+    ttk.Entry(recp_subframe, textvariable=recp_name,style='Register.TEntry').grid(
         row=1, column=1, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Gender').grid(
+    ttk.Label(recp_subframe, text='Gender',style='Register.TLabel').grid(
         row=1, column=2, sticky='e', padx=5, pady=5)
     recp_gender = tk.StringVar()
     ttk.Combobox(recp_subframe, textvariable=recp_gender,
                  values=('Male', 'Female', 'Other'),
-                 state='readonly').grid(
+                 state='readonly',style='Register.TCombobox').grid(
         row=1, column=3, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Blood Group').grid(
+    ttk.Label(recp_subframe, text='Blood Group',style='Register.TLabel').grid(
         row=1, column=4, sticky='e', padx=5, pady=5)
     recp_blood = tk.StringVar()
     ttk.Combobox(recp_subframe, textvariable=recp_blood,
                  values=('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
-                 state='readonly').grid(
+                 state='readonly',style='Register.TCombobox').grid(
         row=1, column=5, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Age').grid(
+    ttk.Label(recp_subframe, text='Age',style='Register.TLabel').grid(
         row=2, column=0, sticky='e', padx=5, pady=5)
     recp_age = tk.IntVar(value=0)
     ttk.Spinbox(recp_subframe, from_=0, to=122,
-                textvariable=recp_age).grid(
+                textvariable=recp_age,style='Register.TSpinbox').grid(
         row=2, column=1, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='DOB').grid(
+    ttk.Label(recp_subframe, text='DOB',style='Register.TLabel').grid(
         row=2, column=2, sticky='e', padx=5, pady=5)
     recp_dob = tk.StringVar()
     recp_dob_ent = DateEntry(recp_subframe, date_pattern='yyyy/mm/dd',
-                             textvariable=recp_dob)
+                             textvariable=recp_dob,style='Register.TEntry')
     recp_dob_ent.grid(row=2, column=3, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Phone').grid(
+    ttk.Label(recp_subframe, text='Phone',style='Register.TLabel').grid(
         row=2, column=4, sticky='e', padx=5, pady=5)
 
     def validate_recipient_phone(value):
@@ -731,38 +912,39 @@ def open_recp_regs():
         recp_subframe,
         validate='key',
         validatecommand=(recipient_phone_validation, '%P'),
-        textvariable=recp_phone
+        textvariable=recp_phone,
+        style='Register.TEntry'
     ).grid(row=2, column=5, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Condition').grid(
+    ttk.Label(recp_subframe, text='Condition',style='Register.TLabel').grid(
         row=3, column=0, sticky='e', padx=5, pady=5)
     recp_condition = tk.StringVar()
     ttk.Combobox(recp_subframe, textvariable=recp_condition,
                  values=('Critical', 'Normal'),
-                 state='readonly').grid(
+                 state='readonly',style='Register.TCombobox').grid(
         row=3, column=1, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Urgency').grid(
+    ttk.Label(recp_subframe, text='Urgency',style='Register.TLabel').grid(
         row=3, column=2, sticky='e', padx=5, pady=5)
     recp_urgency = tk.StringVar()
     ttk.Combobox(recp_subframe, textvariable=recp_urgency,
                  values=('High', 'Medium', 'Low'),
-                 state='readonly').grid(
+                 state='readonly',style='Register.TCombobox').grid(
         row=3, column=3, sticky='ew', padx=5, pady=5)
 
-    ttk.Label(recp_subframe, text='Units Required').grid(
+    ttk.Label(recp_subframe, text='Units Required',style='Register.TLabel').grid(
         row=3, column=4, sticky='e', padx=5, pady=5)
     recp_units = tk.IntVar(value=1)
     ttk.Spinbox(recp_subframe, from_=1, to=99999999999,
-                textvariable=recp_units).grid(
+                textvariable=recp_units,style='Register.TSpinbox').grid(
         row=3, column=5, sticky='ew', padx=5, pady=5)
 
     submit_btn = ttk.Button(
         recp_subframe,
         text='Submit',
-        command=register_recp)
+        command=register_recp,style='Register.TButton')
     submit_btn.grid(
-        row=6,column=2,
+        row=4,column=2,
         columnspan=2,pady=15)
 
 admin_logged_in = False
@@ -882,36 +1064,34 @@ def open_blood_overview():
     load_blood_overview()
     blood_inv_frame.tkraise()
 
-#home page
 
-grid6x6(home_frame)
 home_title = ttk.Label(
     home_frame,
     text='Harrison Trust',
     font=('Impact',96,'bold'),
-    anchor='center'
-    )
+    anchor='center',style='Title.TLabel')
+
 home_title.grid(
     row=0,column=0,columnspan=6,
     sticky='nswe',pady=20)
 
 regs_btn = ttk.Button(
     home_frame,
-    text='Registration',
+    text='Registration',style='Home.TButton',
     command= lambda: regs_frame.tkraise())
+
 regs_btn.grid(
     row=2,column=2,rowspan=2,
     sticky='nsew',padx=20,pady=10)
 
 admin_btn = ttk.Button(
     home_frame,
-    text='Admin',
+    text='Admin',style='Admin.TButton',
     command=lambda: login_frame.tkraise())
+
 admin_btn.grid(
     row=2,column=3,rowspan=2,
     sticky='nsew',padx=20,pady=10)
-
-#user page
 
 grid6x6(regs_frame)
 back_btn = ttk.Button(
@@ -935,86 +1115,59 @@ recp_btn.grid(row=3,column=1,
               sticky='news',padx=10,pady=10)
 
 
-#admin login
-
-grid6x6(login_frame)
-back_btn = ttk.Button(
-    login_frame,
-    text='Back',
-    command=lambda: home_frame.tkraise())
+back_btn = ttk.Button(login_frame,text='Back',style='Back.TButton',
+                      command=lambda: home_frame.tkraise())
 back_btn.place(x=50, y=50)
 
-login_subframe = ttk.Frame(
-    login_frame,
-    borderwidth=5,
-    relief='solid')
-login_subframe.grid(
-    row=1, column=1,
-    rowspan=4, columnspan=4,
-    sticky='nsew', padx=40, pady=30)
+login_subframe = ttk.Frame(login_frame,borderwidth=5,
+                           relief='solid')
+login_subframe.grid(row=1, column=1,
+                    rowspan=4, columnspan=4,
+                    sticky='nsew', padx=40, pady=30)
 
 grid6x6(login_subframe)
-l_header = ttk.Label(
-    login_subframe,
-    text='Sign in',
-    font=('Calibri', 42, 'bold'),
-    anchor='center')
-l_header.grid(
-    row=1, column=0,
-    columnspan=6, sticky='ew')
+l_header = ttk.Label(login_subframe,text='Sign in',
+                     font=('Calibri', 42, 'bold'),
+                     anchor='center',style='LoginTitle.TLabel')
+l_header.grid(row=1, column=0,
+              columnspan=6, sticky='ew')
 
 user_var = tk.StringVar()
-user_label = ttk.Label(
-    login_subframe,
-    text='Username')
-user_label.grid(row=2, column=1, columnspan=2, sticky='ew')
+user_label = ttk.Label(login_subframe,text='Username',style='Login.TLabel')
+user_label.grid(row=2, column=1, columnspan=2, sticky='ew',padx=10)
 
-username_ent = ttk.Entry(
-    login_subframe,
-    textvariable=user_var)
-username_ent.grid(
-    row=2, column=3, 
-    columnspan=2, sticky='ew')
+username_ent = ttk.Entry(login_subframe,style='Login.TEntry',
+                         textvariable=user_var)
+username_ent.grid(row=2, column=2, 
+                  columnspan=2, sticky='ew',padx=10)
 
 pass_var = tk.StringVar()
-passwd_label = ttk.Label(
-    login_subframe,
-    text='Password')
-passwd_label.grid(row=3, column=1, columnspan=2, sticky='ew')
+passwd_label = ttk.Label(login_subframe,style='Login.TLabel',
+                         text='Password')
+passwd_label.grid(row=3, column=1, columnspan=2, sticky='ew',padx=10)
 
-password_ent = ttk.Entry(
-    login_subframe,
-    textvariable=pass_var,
-    show='*')
-password_ent.grid(
-    row=3, column=3, columnspan=2, sticky='ew')
+password_ent = ttk.Entry(login_subframe,textvariable=pass_var,
+                         style='Login.TEntry',show='*')
+password_ent.grid(row=3, column=2, columnspan=2, sticky='ew',padx=10)
 
-show_pass_btn = ttk.Checkbutton(
-    login_frame,text='Show Password',
-    variable=show_password,command=toggle_passwd)
-show_pass_btn.grid(row=4,column=2,sticky='w')
+show_pass_btn = ttk.Checkbutton(login_subframe,text='Show Password',
+                                style='Login.TCheckbutton',variable=show_password,
+                                command=toggle_passwd)
+show_pass_btn.grid(row=3,column=4,sticky='w',padx=10)
 
-login_btn = ttk.Button(
-    login_subframe,
-    text='Sign in',
-    command=login_admin)
+login_btn = ttk.Button(login_subframe,text='Sign in',
+                       style='Login.TButton',command=login_admin)
 
-login_btn.grid(
-    row=4, column=2,
-    columnspan=2, sticky='ew',
-    padx=10, pady=10)
-
-#admin dashboard
+login_btn.grid(row=4, column=2,
+               columnspan=2, sticky='ew',
+               padx=10, pady=10)
 
 admin_dash_frame = ttk.Frame(admin_frame)
 admin_dash_frame.place(relx=0,rely=0,relwidth=1,relheight=1)
 grid6x6(admin_dash_frame)
 
-admin_header = ttk.Label(
-    admin_dash_frame,
-    text="Admin Dashboard",
-    font=("Calibri", 32, "bold"),
-    anchor="center")
+admin_header = ttk.Label(admin_dash_frame,text="Admin Dashboard",style='AdminTitle.TLabel',
+                         font=("Calibri", 32, "bold"),anchor="center")
 
 admin_header.grid(
     row=0,column=1,columnspan=4,
@@ -1036,11 +1189,17 @@ def open_admin_section(section):
         login_frame.tkraise()
         return
 
+    if section == donors_rec_frame:
+        load_donors()
+
+    elif section == recp_rec_frame:
+        load_recipients()
+
     section.tkraise()
 
 donors_btn = ttk.Button(
     admin_dash_frame,
-    text="View Donors",
+    text="View Donors",style='Admin.TButton',
     command=lambda: open_admin_section(donors_rec_frame))
 
 donors_btn.grid(
@@ -1050,7 +1209,7 @@ donors_btn.grid(
 
 recipients_btn = ttk.Button(
     admin_dash_frame,
-    text="View Recipients",
+    text="View Recipients",style='Admin.TButton',
     command=lambda: open_admin_section(recp_rec_frame))
 
 recipients_btn.grid(
@@ -1060,7 +1219,7 @@ recipients_btn.grid(
 
 inventory_btn = ttk.Button(
     admin_dash_frame,
-    text="Blood Inventory",
+    text="Blood Inventory",style='Admin.TButton',
     command=open_blood_overview)
 
 inventory_btn.grid(
@@ -1070,7 +1229,7 @@ inventory_btn.grid(
 
 logout_btn = ttk.Button(
     admin_dash_frame,
-    text="Logout",
+    text="Logout",style='AdminLogout.TButton',
     command=logout_admin)
 
 logout_btn.grid(
@@ -1080,7 +1239,6 @@ logout_btn.grid(
 
 admin_dash_frame.tkraise()
 
-#donor recs
 header_donor = ttk.Frame(donors_rec_frame)
 header_donor.pack(fill='x',padx=10,pady=10)
 title = ttk.Label(header_donor,text='Donor Records',
@@ -1093,10 +1251,8 @@ back.pack(side='right',padx=10)
 columns_don = ('ID','Name','Gender','Age','DOB','Phone',
            'City','Blood Group','Haemoglobin','Weight','SBP','DBP','Last Donation')
 
-tree_don = ttk.Treeview(
-    donors_rec_frame,
-    columns=columns_don,
-    show='headings')
+tree_don = ttk.Treeview(donors_rec_frame,columns=columns_don,
+                        style='Records.Treeview',show='headings')
 tree_don.pack(fill='both',expand=True)
 
 tree_don.heading('ID',text='Donor ID')
@@ -1138,22 +1294,23 @@ tree_don.column('DBP',width=50,anchor='center')
 tree_don.heading('Last Donation',text='Last Donation')
 tree_don.column('Last Donation',width=40,anchor='center')
 
-query = '''SELECT 
+donor_query = '''SELECT 
                 Donor_ID,Donor_Name,Gender,
                 Age,DOB,Phone,City,Blood_Group,
                 Haemoglobin,Weight,Systolic_BP,
                 Diastolic_BP,Last_Donation 
             FROM donors_general NATURAL JOIN donors_medical
             ORDER BY Donor_ID'''
+def load_donors():
+    for item in tree_don.get_children():
+        tree_don.delete(item)
 
-cur.execute(query)
-records_don = cur.fetchall()
+    cur.execute(donor_query)
+    records_don = cur.fetchall()
 
-for rec in records_don:
-    tree_don.insert('','end',values=rec)
+    for rec in records_don:
+        tree_don.insert('','end',values=rec)
 
-
-#recp recs
 header_recp = ttk.Frame(recp_rec_frame)
 header_recp.pack(fill='x',padx=10,pady=10)
 title = ttk.Label(header_recp,text='Recipient Records',
@@ -1166,10 +1323,8 @@ back.pack(side='right',padx=10)
 columns_recp = ('ID','Name','Gender','Age','DOB','Phone',
            'Blood Group','Condition','Urgency','Units Required')
 
-tree_recp = ttk.Treeview(
-    recp_rec_frame,
-    columns=columns_recp,
-    show='headings')
+tree_recp = ttk.Treeview(recp_rec_frame,columns=columns_recp,
+                        style='Records.Treeview',show='headings')
 tree_recp.pack(fill='both',expand=True)
 
 tree_recp.heading('ID',text='Recipient ID')
@@ -1202,20 +1357,23 @@ tree_recp.column('Urgency',width=70,anchor='center')
 tree_recp.heading('Units Required',text='Units Required')
 tree_recp.column('Units Required',width=50,anchor='center')
 
-query = '''SELECT 
+recipients_query = '''SELECT 
                 Recipient_ID,Recipient_Name,Gender,
                 Age,DOB,Phone,Blood_Group,
                 Rec_Condition,Urgency,Units_Reqd
             FROM recipients_general NATURAL JOIN recipients_medical
             ORDER BY Recipient_ID'''
 
-cur.execute(query)
-records_recp = cur.fetchall()
+def load_recipients():
+    for item in tree_recp.get_children():
+        tree_recp.delete(item)
 
-for rec in records_recp:
-    tree_recp.insert('','end',values=rec)
+    cur.execute(recipients_query)
+    records_recp = cur.fetchall()
 
-#inventory
+    for rec in records_recp:
+        tree_recp.insert('','end',values=rec)
+
 blood_inv_frame.place(
     relx=0,rely=0,
     relwidth=1,relheight=1)
@@ -1223,16 +1381,12 @@ blood_inv_frame.place(
 inv_header = ttk.Frame(blood_inv_frame)
 inv_header.pack(fill='x',padx=10,pady=5)
 
-inv_title = ttk.Label(
-    inv_header,
-    text='Blood Group Overview',
-    font=('Calibri',24,'bold'))
+inv_title = ttk.Label(inv_header,text='Blood Group Overview',
+                      font=('Calibri',24,'bold'))
 inv_title.pack(side='left',padx=10)
 
-inv_back_btn = ttk.Button(
-    inv_header,
-    text='Back',
-    command=lambda:admin_dash_frame.tkraise())
+inv_back_btn = ttk.Button(inv_header,text='Back',
+                          command=lambda:admin_dash_frame.tkraise())
 inv_back_btn.pack(side='right',padx=10)
 
 inv_content = ttk.Frame(blood_inv_frame)
@@ -1278,8 +1432,5 @@ compatibility = [('A+','A+, A-, O+, O-'),('A-','A-, O-'),
 
 for rec in compatibility:
     compat_tree.insert('', 'end', values=rec)
-
-
-
 
 root.mainloop()
