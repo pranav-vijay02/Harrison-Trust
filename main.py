@@ -1017,44 +1017,22 @@ def toggle_passwd():
 
 def load_blood_overview():
 
-    for item in blood_tree.get_children():
-        blood_tree.delete(item)
+    for blood in blood_groups:
+        cur.execute(
+            'SELECT COUNT(*) FROM donors_general WHERE Blood_Group=%s',
+            (blood,))
+        donor_counts[blood] = cur.fetchone()[0]
 
-    donor_counts = {'A+':0,'A-':0,'B+':0,'B-':0,
-                    'AB+':0,'AB-':0,'O+':0,'O-':0}
+        cur.execute(
+            'SELECT COUNT(*) FROM recipients_general WHERE Blood_Group=%s',
+            (blood,))
+        recipient_counts[blood] = cur.fetchone()[0]
 
-    recipient_counts = {'A+':0,'A-':0,'B+':0,'B-':0,
-                        'AB+':0,'AB-':0,'O+':0,'O-':0}
+        donor_stat_labels[blood].config(
+            text=str(donor_counts[blood]))
 
-    units_required = {'A+':0,'A-':0,'B+':0,'B-':0,
-                      'AB+':0,'AB-':0,'O+':0,'O-':0}
-
-    cur.execute("""
-    SELECT Blood_Group, COUNT(*)
-    FROM donors_general
-    GROUP BY Blood_Group
-    """)
-
-    for blood_group,total in cur.fetchall():
-        donor_counts[blood_group] = total
-
-    cur.execute("""
-                SELECT g.Blood_Group, COUNT(*), SUM(m.Units_Reqd) 
-                FROM recipients_general g 
-                NATURAL JOIN recipients_medical m 
-                GROUP BY g.Blood_Group""")
-
-    for blood_group,total,units in cur.fetchall():
-        recipient_counts[blood_group] = total
-        units_required[blood_group] = units
-
-    for blood_group in donor_counts:
-        blood_tree.insert(
-            '', 'end',
-            values=(blood_group,
-                    donor_counts[blood_group],
-                    recipient_counts[blood_group],
-                    units_required[blood_group]))
+        recp_stat_labels[blood].config(
+            text=str(recipient_counts[blood]))
 
 
 def open_blood_overview():
@@ -1254,13 +1232,13 @@ tree_don = ttk.Treeview(donors_rec_frame,columns=columns_don,
                         style='Records.Treeview',show='headings')
 don_scroll = ttk.Scrollbar(
     donors_rec_frame,
-    orient='horizontal',
-    command=tree_don.xview)
+    orient='vertical',
+    command=tree_don.yview)
 
-tree_don.configure(xscrollcommand=don_scroll.set)
+tree_don.configure(yscrollcommand=don_scroll.set)
 
+don_scroll.pack(side='right',fill='y')
 tree_don.pack(fill='both',expand=True)
-don_scroll.pack(fill='x')
 
 tree_don.heading('ID',text='Donor ID')
 tree_don.column('ID',width=70,anchor='center')
@@ -1335,13 +1313,13 @@ tree_recp = ttk.Treeview(recp_rec_frame,columns=columns_recp,
 
 recp_scroll = ttk.Scrollbar(
     recp_rec_frame,
-    orient='horizontal',
-    command=tree_recp.xview)
+    orient='vertical',
+    command=tree_recp.yview)
 
-tree_recp.configure(xscrollcommand=recp_scroll.set)
+tree_recp.configure(yscrollcommand=recp_scroll.set)
 
+recp_scroll.pack(side='right',fill='y')
 tree_recp.pack(fill='both',expand=True)
-recp_scroll.pack(fill='x')
 
 tree_recp.heading('ID',text='Recipient ID')
 tree_recp.column('ID',width=70,anchor='center')
@@ -1405,49 +1383,63 @@ inv_back_btn = ttk.Button(inv_header,text='Back',
                           command=lambda:admin_dash_frame.tkraise())
 inv_back_btn.pack(side='right',padx=10)
 
-inv_content = ttk.Frame(blood_inv_frame)
-inv_content.pack(fill='both',expand=True,padx=10,pady=5)
+blood_groups = ['A+','A-','B+','B-','AB+','AB-','O+','O-']
 
-blood_columns = ('Blood Group','Donors Registered',
-                 'Recipients Registered','Units Required')
+donor_counts = {}
+recipient_counts = {}
 
-blood_tree = ttk.Treeview(
-    inv_content,
-    columns=blood_columns,
-    show='headings',
-    height=8)
+donor_stat_labels = {}
+recp_stat_labels = {}
 
-for col in blood_columns:
-    blood_tree.heading(col,text=col)
-    blood_tree.column(col,anchor='center',width=120)
+for blood in blood_groups:
+    cur.execute(
+        'SELECT COUNT(*) FROM donors_general WHERE Blood_Group=%s',
+        (blood,))
+    donor_counts[blood] = cur.fetchone()[0]
 
-blood_tree.pack(
-    side='left',fill='both',expand=True,padx=5)
+    cur.execute(
+        'SELECT COUNT(*) FROM recipients_general WHERE Blood_Group=%s',
+        (blood,))
+    recipient_counts[blood] = cur.fetchone()[0]
 
-compat_columns = ('Recipient Blood Group',
-                  'Compatible Donor Groups')
+stats_frame = ttk.Frame(blood_inv_frame)
+stats_frame.pack(fill='both',expand=True,padx=10,pady=10)
 
-compat_tree = ttk.Treeview(
-    inv_content,
-    columns=compat_columns,
-    show='headings',
-    height=8)
+for i in range(3):
+    stats_frame.columnconfigure(i,weight=1)
 
-for col in compat_columns:
-    compat_tree.heading(col,text=col)
-    compat_tree.column(col,anchor='center',width=150)
+blood_header =ttk.Label(stats_frame,text='Blood Group',
+          style='Heading.TLabel')
+blood_header.grid(row=0,column=0,
+                  padx=20,pady=10,sticky='nsew')
 
-compat_tree.pack(
-    side='right',fill='both',expand=True,padx=5)
+donor_header = ttk.Label(stats_frame,text='Available Donors',
+          style='Heading.TLabel')
+donor_header.grid(row=0,column=1,
+                  padx=20,pady=10,sticky='nsew')
 
+recp_header = ttk.Label(stats_frame,text='Recipients',
+          style='Heading.TLabel')
+recp_header.grid(row=0,column=2,
+                 padx=20,pady=10,sticky='nsew')
 
-compatibility = [('A+','A+, A-, O+, O-'),('A-','A-, O-'),
-                 ('B+','B+, B-, O+, O-'),('B-','B-, O-'),
-                 ('AB+','All blood groups'),('O+','O+, O-'),
-                 ('AB-','AB-, A-, B-, O-'),('O-','O-')]
+for i,blood in enumerate(blood_groups):
+    blood_label = ttk.Label(stats_frame,text=blood,
+              style='Register.TLabel')
+    blood_label.grid(row=i+1,column=0,
+                     padx=20,pady=10,sticky='nsew')
 
-for rec in compatibility:
-    compat_tree.insert('', 'end', values=rec)
+    donor_label = ttk.Label(stats_frame,text=str(donor_counts[blood]),
+              style='Register.TLabel')
+    donor_label.grid(row=i+1,column=1,
+                     padx=20,pady=10,sticky='nsew')
+    donor_stat_labels[blood] = donor_label
+
+    recp_label = ttk.Label(stats_frame,text=str(recipient_counts[blood]),
+              style='Normal.TLabel')
+    recp_label.grid(row=i+1,column=2,
+                    padx=20,pady=10,sticky='nsew')
+    recp_stat_labels[blood] = recp_label
 
 admin_dash_frame.tkraise()
 
