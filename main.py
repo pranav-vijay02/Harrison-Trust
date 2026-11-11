@@ -3,8 +3,6 @@ from tkinter import ttk,messagebox
 import mysql.connector as mycon
 from tkcalendar import DateEntry
 from datetime import date
-import hashlib
-import hmac
 
 
 BG = '#101B2D'
@@ -963,31 +961,14 @@ def login_admin():
         return
 
     cur.execute("""
-        SELECT Password_Salt, Password_Hash
+        SELECT Password
         FROM admin_users
         WHERE Username = %s
     """, (username,))
 
     result = cur.fetchone()
 
-    if result is None:
-        messagebox.showerror(
-            'Login Failed',
-            'Invalid username or password.'
-        )
-        pass_var.set('')
-        return
-
-    salt, stored_hash = result
-
-    entered_hash = hashlib.pbkdf2_hmac(
-        'sha256',
-        password.encode(),
-        bytes.fromhex(salt),
-        200000
-    ).hex()
-
-    if hmac.compare_digest(entered_hash, stored_hash):
+    if result is not None and password == result[0]:
         admin_logged_in = True
         pass_var.set('')
         admin_frame.tkraise()
